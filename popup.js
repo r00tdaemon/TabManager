@@ -72,6 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
     checkbox.checked = !checkbox.checked;
     tabElement.classList.toggle('selected', checkbox.checked);
     updateSelectAllButton();
+
+    // Update the group checkbox if all tabs in the group are selected
+    const groupElement = tabElement.closest('.tab-group');
+    updateGroupCheckbox(groupElement);
   }
 
   // Function to update select all button state
@@ -87,10 +91,16 @@ document.addEventListener('DOMContentLoaded', () => {
     isAllSelected = !isAllSelected;
     const checkboxes = document.querySelectorAll('.tab-item input[type="checkbox"]');
     const tabItems = document.querySelectorAll('.tab-item');
+    const groupCheckboxes = document.querySelectorAll('.tab-group-header input[type="checkbox"]');
 
     checkboxes.forEach((checkbox, index) => {
       checkbox.checked = isAllSelected;
       tabItems[index].classList.toggle('selected', isAllSelected);
+    });
+
+    // Update all group checkboxes to match the select all state
+    groupCheckboxes.forEach(checkbox => {
+      checkbox.checked = isAllSelected;
     });
 
     selectAllBtn.textContent = isAllSelected ? 'Deselect All' : 'Select All';
@@ -116,9 +126,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update group checkbox
     groupCheckbox.checked = !allSelected;
+    groupCheckbox.indeterminate = false;
 
     // Update global select all button state
     updateSelectAllButton();
+  }
+
+  // Function to update group checkbox based on its tab selections
+  function updateGroupCheckbox(groupElement) {
+    const groupCheckbox = groupElement.querySelector('.tab-group-header input[type="checkbox"]');
+    const tabCheckboxes = groupElement.querySelectorAll('.tab-item input[type="checkbox"]');
+    const allChecked = Array.from(tabCheckboxes).every(checkbox => checkbox.checked);
+    const someChecked = Array.from(tabCheckboxes).some(checkbox => checkbox.checked);
+
+    // Update the group checkbox state
+    groupCheckbox.checked = allChecked;
+    groupCheckbox.indeterminate = someChecked && !allChecked;
   }
 
   // Function to display duplicate tabs
@@ -187,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         checkbox.addEventListener('change', () => {
           tabElement.classList.toggle('selected', checkbox.checked);
           updateSelectAllButton();
+          updateGroupCheckbox(groupElement);
         });
 
         // Add click handler to title to switch to tab
