@@ -181,6 +181,11 @@ button:disabled {
   margin-left: 16px;
 }
 
+/* Remove indentation for ungrouped tabs when they're the only tabs in a group */
+.chrome-group-container.no-indent {
+  margin-left: 0;
+}
+
 /* Remove the old selector that only targeted the first tab */
 .chrome-group-header + .tab-item {
   margin-left: 0;

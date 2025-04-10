@@ -192,6 +192,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Display tabs grouped by Chrome tab group
       tabsByChromeGroup.forEach((tabs, chromeGroupId) => {
+        // Check if this is the only group and it's ungrouped
+        const isOnlyUngrouped = tabsByChromeGroup.size === 1 && chromeGroupId === 'ungrouped';
+
         // Create a sub-group for Chrome tab groups
         if (chromeGroupId !== 'ungrouped') {
           const chromeGroupHeader = document.createElement('div');
@@ -217,8 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
           chromeGroupHeader.appendChild(chromeGroupTitle);
           groupElement.appendChild(chromeGroupHeader);
-        } else {
-          // For ungrouped tabs, add a header
+        } else if (!isOnlyUngrouped) {
+          // For ungrouped tabs, add a header only if it's not the only group
           const ungroupedHeader = document.createElement('div');
           ungroupedHeader.className = 'chrome-group-header';
           const ungroupedTitle = document.createElement('h4');
@@ -231,6 +234,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create a container for all tabs in this Chrome group
         const chromeGroupContainer = document.createElement('div');
         chromeGroupContainer.className = 'chrome-group-container';
+
+        // If it's the only ungrouped group, remove the indentation
+        if (isOnlyUngrouped) {
+          chromeGroupContainer.classList.add('no-indent');
+        }
+
         groupElement.appendChild(chromeGroupContainer);
 
         // Add tabs to this Chrome group
