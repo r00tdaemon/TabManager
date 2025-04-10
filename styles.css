@@ -177,6 +177,11 @@ button:disabled {
 }
 
 /* Indent tabs within Chrome groups */
-.chrome-group-header + .tab-item {
+.chrome-group-container {
   margin-left: 16px;
+}
+
+/* Remove the old selector that only targeted the first tab */
+.chrome-group-header + .tab-item {
+  margin-left: 0;
 }

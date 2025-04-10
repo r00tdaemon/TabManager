@@ -228,6 +228,11 @@ document.addEventListener('DOMContentLoaded', () => {
           groupElement.appendChild(ungroupedHeader);
         }
 
+        // Create a container for all tabs in this Chrome group
+        const chromeGroupContainer = document.createElement('div');
+        chromeGroupContainer.className = 'chrome-group-container';
+        groupElement.appendChild(chromeGroupContainer);
+
         // Add tabs to this Chrome group
         tabs.forEach(tab => {
           const tabElement = document.createElement('div');
@@ -270,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             switchToTab(tab.id);
           });
 
-          groupElement.appendChild(tabElement);
+          chromeGroupContainer.appendChild(tabElement);
         });
       });
 
