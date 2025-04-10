@@ -147,9 +147,16 @@ button:disabled {
 
 .tab-item .tab-title {
   flex: 1;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  cursor: pointer;
+  transition: text-decoration 0.2s;
+}
+
+.tab-item .tab-title:hover {
+  text-decoration: underline;
+  color: #1a73e8;
 }
 
 .hidden {

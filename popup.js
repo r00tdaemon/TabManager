@@ -189,8 +189,9 @@ document.addEventListener('DOMContentLoaded', () => {
           updateSelectAllButton();
         });
 
-        // Add double click handler to switch to tab
-        tabElement.addEventListener('dblclick', () => {
+        // Add click handler to title to switch to tab
+        title.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent the tab selection toggle
           switchToTab(tab.id);
         });
 
