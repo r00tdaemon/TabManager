@@ -1,0 +1,16 @@
+{
+    "manifest_version": 3,
+    "name": "Duplicate Tab Manager",
+    "version": "1.0",
+    "description": "Close duplicate tabs based on domain, path, or full URL",
+    "permissions": [
+        "tabs",
+        "activeTab"
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    }
+}

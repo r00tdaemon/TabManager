@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Duplicate Tab Manager</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Duplicate Tab Manager</h2>
+
+    <div class="options">
+      <label>
+        <input type="radio" name="matchType" value="domain" checked>
+        Match by Domain
+      </label>
+      <label>
+        <input type="radio" name="matchType" value="path">
+        Match by Path
+      </label>
+      <label>
+        <input type="radio" name="matchType" value="full">
+        Match by Full URL
+      </label>
+    </div>
+
+    <button id="findDuplicates">Find Duplicates</button>
+
+    <div id="duplicateTabs" class="duplicate-tabs">
+      <!-- Duplicate tabs will be displayed here -->
+    </div>
+
+    <button id="closeDuplicates" class="hidden">Close Duplicate Tabs</button>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
