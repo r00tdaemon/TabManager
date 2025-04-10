@@ -195,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Function to close selected tabs
   async function closeSelectedTabs() {
+    // Get all selected tabs
     const selectedTabs = Array.from(document.querySelectorAll('.tab-item input[type="checkbox"]:checked'))
       .map(checkbox => {
         const tabElement = checkbox.closest('.tab-item');
@@ -203,8 +204,32 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
     if (selectedTabs.length > 0) {
-      await chrome.tabs.remove(selectedTabs);
-      findDuplicateTabs(); // Refresh the list
+      // Group the selected tabs by their group
+      const tabGroups = new Map();
+
+      // Find which group each selected tab belongs to
+      duplicateTabs.forEach(group => {
+        group.tabs.forEach(tab => {
+          if (selectedTabs.includes(tab.id)) {
+            if (!tabGroups.has(group.key)) {
+              tabGroups.set(group.key, []);
+            }
+            tabGroups.get(group.key).push(tab.id);
+          }
+        });
+      });
+
+      // For each group, keep one tab and close the rest
+      const tabsToClose = [];
+      tabGroups.forEach((tabIds, groupKey) => {
+        // Keep the first tab in each group, close the rest
+        tabsToClose.push(...tabIds.slice(1));
+      });
+
+      if (tabsToClose.length > 0) {
+        await chrome.tabs.remove(tabsToClose);
+        findDuplicateTabs(); // Refresh the list
+      }
     }
   }
 
