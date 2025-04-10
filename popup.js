@@ -1,8 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
   const findDuplicatesBtn = document.getElementById('findDuplicates');
   const closeDuplicatesBtn = document.getElementById('closeDuplicates');
+  const selectAllBtn = document.getElementById('selectAll');
   const duplicateTabsContainer = document.getElementById('duplicateTabs');
+  const actionButtons = document.querySelector('.action-buttons');
   let duplicateTabs = [];
+  let isAllSelected = false;
 
   // Function to get the matching key based on selected option
   function getMatchingKey(url, matchType) {
@@ -49,17 +52,55 @@ document.addEventListener('DOMContentLoaded', () => {
     displayDuplicateTabs();
   }
 
+  // Function to switch to a specific tab
+  async function switchToTab(tabId) {
+    await chrome.tabs.update(tabId, { active: true });
+    window.close(); // Close the popup after switching
+  }
+
+  // Function to toggle tab selection
+  function toggleTabSelection(tabElement, tabId) {
+    const checkbox = tabElement.querySelector('input[type="checkbox"]');
+    checkbox.checked = !checkbox.checked;
+    tabElement.classList.toggle('selected', checkbox.checked);
+    updateSelectAllButton();
+  }
+
+  // Function to update select all button state
+  function updateSelectAllButton() {
+    const checkboxes = document.querySelectorAll('.tab-item input[type="checkbox"]');
+    const checkedBoxes = document.querySelectorAll('.tab-item input[type="checkbox"]:checked');
+    isAllSelected = checkboxes.length > 0 && checkboxes.length === checkedBoxes.length;
+    selectAllBtn.textContent = isAllSelected ? 'Deselect All' : 'Select All';
+  }
+
+  // Function to toggle all tabs selection
+  function toggleAllTabs() {
+    isAllSelected = !isAllSelected;
+    const checkboxes = document.querySelectorAll('.tab-item input[type="checkbox"]');
+    const tabItems = document.querySelectorAll('.tab-item');
+
+    checkboxes.forEach((checkbox, index) => {
+      checkbox.checked = isAllSelected;
+      tabItems[index].classList.toggle('selected', isAllSelected);
+    });
+
+    selectAllBtn.textContent = isAllSelected ? 'Deselect All' : 'Select All';
+  }
+
   // Function to display duplicate tabs
   function displayDuplicateTabs() {
     duplicateTabsContainer.innerHTML = '';
 
     if (duplicateTabs.length === 0) {
       duplicateTabsContainer.innerHTML = '<p>No duplicate tabs found.</p>';
-      closeDuplicatesBtn.classList.add('hidden');
+      actionButtons.classList.add('hidden');
       return;
     }
 
-    closeDuplicatesBtn.classList.remove('hidden');
+    actionButtons.classList.remove('hidden');
+    isAllSelected = false;
+    selectAllBtn.textContent = 'Select All';
 
     duplicateTabs.forEach(group => {
       const groupElement = document.createElement('div');
@@ -73,15 +114,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const tabElement = document.createElement('div');
         tabElement.className = 'tab-item';
 
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = false;
+
         const favicon = document.createElement('img');
         favicon.src = tab.favIconUrl || 'default-favicon.png';
         favicon.onerror = () => favicon.src = 'default-favicon.png';
 
         const title = document.createElement('span');
+        title.className = 'tab-title';
         title.textContent = tab.title;
 
+        tabElement.appendChild(checkbox);
         tabElement.appendChild(favicon);
         tabElement.appendChild(title);
+
+        // Add click handlers
+        tabElement.addEventListener('click', (e) => {
+          if (e.target !== checkbox) {
+            toggleTabSelection(tabElement, tab.id);
+          }
+        });
+
+        checkbox.addEventListener('change', () => {
+          tabElement.classList.toggle('selected', checkbox.checked);
+          updateSelectAllButton();
+        });
+
+        // Add double click handler to switch to tab
+        tabElement.addEventListener('dblclick', () => {
+          switchToTab(tab.id);
+        });
+
         groupElement.appendChild(tabElement);
       });
 
@@ -89,17 +154,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Function to close duplicate tabs
-  async function closeDuplicateTabs() {
-    const tabsToClose = duplicateTabs.flatMap(group =>
-      group.tabs.slice(1).map(tab => tab.id)
-    );
+  // Function to close selected tabs
+  async function closeSelectedTabs() {
+    const selectedTabs = Array.from(document.querySelectorAll('.tab-item input[type="checkbox"]:checked'))
+      .map(checkbox => {
+        const tabElement = checkbox.closest('.tab-item');
+        const tabId = parseInt(tabElement.dataset.tabId);
+        return tabId;
+      });
 
-    await chrome.tabs.remove(tabsToClose);
-    findDuplicateTabs(); // Refresh the list
+    if (selectedTabs.length > 0) {
+      await chrome.tabs.remove(selectedTabs);
+      findDuplicateTabs(); // Refresh the list
+    }
   }
 
   // Event listeners
   findDuplicatesBtn.addEventListener('click', findDuplicateTabs);
-  closeDuplicatesBtn.addEventListener('click', closeDuplicateTabs);
+  closeDuplicatesBtn.addEventListener('click', closeSelectedTabs);
+  selectAllBtn.addEventListener('click', toggleAllTabs);
 });
