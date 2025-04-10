@@ -149,11 +149,13 @@ document.addEventListener('DOMContentLoaded', () => {
     duplicateTabsContainer.innerHTML = '';
 
     if (duplicateTabs.length === 0) {
+      duplicateTabsContainer.classList.remove('hidden');
       duplicateTabsContainer.innerHTML = '<p>No duplicate tabs found.</p>';
       actionButtons.classList.add('hidden');
       return;
     }
 
+    duplicateTabsContainer.classList.remove('hidden');
     actionButtons.classList.remove('hidden');
     isAllSelected = false;
     selectAllBtn.textContent = 'Select All';
@@ -209,6 +211,10 @@ document.addEventListener('DOMContentLoaded', () => {
             chrome.tabGroups.get(parseInt(chromeGroupId))
               .then(tabGroup => {
                 chromeGroupTitle.textContent = tabGroup.title || 'Unnamed Group';
+                // Apply the tab group color to the title
+                if (tabGroup.color) {
+                  chromeGroupTitle.style.backgroundColor = `var(--${tabGroup.color}-color)`;
+                }
               })
               .catch(() => {
                 chromeGroupTitle.textContent = 'Chrome Group';

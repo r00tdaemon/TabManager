@@ -2,6 +2,17 @@ body {
   width: 400px;
   padding: 16px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+
+  /* Chrome tab group colors */
+  --grey-color: #5f6368;
+  --blue-color: #1a73e8;
+  --red-color: #ea4335;
+  --yellow-color: #fbbc04;
+  --green-color: #34a853;
+  --pink-color: #e67c73;
+  --purple-color: #a142f4;
+  --cyan-color: #24c1e0;
+  --orange-color: #fa903e;
 }
 
 .container {
@@ -159,7 +170,7 @@ button:disabled {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* Chrome tab group styles */
@@ -172,8 +183,12 @@ button:disabled {
 .chrome-group-title {
   margin: 0;
   font-size: 14px;
-  color: #5f6368;
+  color: white;
   font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  background-color: var(--grey-color);
 }
 
 /* Indent tabs within Chrome groups */
