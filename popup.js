@@ -54,7 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Function to switch to a specific tab
   async function switchToTab(tabId) {
+    // Get the tab to find its window ID
+    const tab = await chrome.tabs.get(tabId);
+
+    // First update the window to be focused
+    await chrome.windows.update(tab.windowId, { focused: true });
+
+    // Then update the tab to be active
     await chrome.tabs.update(tabId, { active: true });
+
     window.close(); // Close the popup after switching
   }
 
