@@ -5,7 +5,8 @@
     "description": "Close duplicate tabs based on domain, path, or full URL",
     "permissions": [
         "tabs",
-        "activeTab"
+        "activeTab",
+        "tabGroups"
     ],
     "action": {
         "default_popup": "popup.html"

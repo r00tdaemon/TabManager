@@ -178,48 +178,100 @@ document.addEventListener('DOMContentLoaded', () => {
       groupHeader.appendChild(groupTitle);
       groupElement.appendChild(groupHeader);
 
+      // Group tabs by Chrome tab group
+      const tabsByChromeGroup = new Map();
+
+      // First, organize tabs by their Chrome tab group
       group.tabs.forEach(tab => {
-        const tabElement = document.createElement('div');
-        tabElement.className = 'tab-item';
-        tabElement.dataset.tabId = tab.id;
+        const chromeGroupId = tab.groupId === chrome.tabGroups.TAB_GROUP_ID_NONE ? 'ungrouped' : tab.groupId;
+        if (!tabsByChromeGroup.has(chromeGroupId)) {
+          tabsByChromeGroup.set(chromeGroupId, []);
+        }
+        tabsByChromeGroup.get(chromeGroupId).push(tab);
+      });
 
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = false;
+      // Display tabs grouped by Chrome tab group
+      tabsByChromeGroup.forEach((tabs, chromeGroupId) => {
+        // Create a sub-group for Chrome tab groups
+        if (chromeGroupId !== 'ungrouped') {
+          const chromeGroupHeader = document.createElement('div');
+          chromeGroupHeader.className = 'chrome-group-header';
 
-        const favicon = document.createElement('img');
-        favicon.src = tab.favIconUrl || 'default-favicon.png';
-        favicon.onerror = () => favicon.src = 'default-favicon.png';
+          // Get the tab group title if available
+          const chromeGroupTitle = document.createElement('h4');
+          chromeGroupTitle.className = 'chrome-group-title';
 
-        const title = document.createElement('span');
-        title.className = 'tab-title';
-        title.textContent = tab.title;
-        title.title = tab.url; // Change tooltip to show full URL instead of title
-
-        tabElement.appendChild(checkbox);
-        tabElement.appendChild(favicon);
-        tabElement.appendChild(title);
-
-        // Add click handlers
-        tabElement.addEventListener('click', (e) => {
-          if (e.target !== checkbox) {
-            toggleTabSelection(tabElement, tab.id);
+          // Try to get the tab group title, but handle errors gracefully
+          try {
+            chrome.tabGroups.get(parseInt(chromeGroupId))
+              .then(tabGroup => {
+                chromeGroupTitle.textContent = tabGroup.title || 'Unnamed Group';
+              })
+              .catch(() => {
+                chromeGroupTitle.textContent = 'Chrome Group';
+              });
+          } catch (error) {
+            // If there's any error accessing tab groups, just show a generic label
+            chromeGroupTitle.textContent = 'Chrome Group';
           }
-        });
 
-        checkbox.addEventListener('change', () => {
-          tabElement.classList.toggle('selected', checkbox.checked);
-          updateSelectAllButton();
-          updateGroupCheckbox(groupElement);
-        });
+          chromeGroupHeader.appendChild(chromeGroupTitle);
+          groupElement.appendChild(chromeGroupHeader);
+        } else {
+          // For ungrouped tabs, add a header
+          const ungroupedHeader = document.createElement('div');
+          ungroupedHeader.className = 'chrome-group-header';
+          const ungroupedTitle = document.createElement('h4');
+          ungroupedTitle.textContent = 'Ungrouped';
+          ungroupedTitle.className = 'chrome-group-title';
+          ungroupedHeader.appendChild(ungroupedTitle);
+          groupElement.appendChild(ungroupedHeader);
+        }
 
-        // Add click handler to title to switch to tab
-        title.addEventListener('click', (e) => {
-          e.stopPropagation(); // Prevent the tab selection toggle
-          switchToTab(tab.id);
-        });
+        // Add tabs to this Chrome group
+        tabs.forEach(tab => {
+          const tabElement = document.createElement('div');
+          tabElement.className = 'tab-item';
+          tabElement.dataset.tabId = tab.id;
 
-        groupElement.appendChild(tabElement);
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.checked = false;
+
+          const favicon = document.createElement('img');
+          favicon.src = tab.favIconUrl || 'default-favicon.png';
+          favicon.onerror = () => favicon.src = 'default-favicon.png';
+
+          const title = document.createElement('span');
+          title.className = 'tab-title';
+          title.textContent = tab.title;
+          title.title = tab.url; // Change tooltip to show full URL instead of title
+
+          tabElement.appendChild(checkbox);
+          tabElement.appendChild(favicon);
+          tabElement.appendChild(title);
+
+          // Add click handlers
+          tabElement.addEventListener('click', (e) => {
+            if (e.target !== checkbox) {
+              toggleTabSelection(tabElement, tab.id);
+            }
+          });
+
+          checkbox.addEventListener('change', () => {
+            tabElement.classList.toggle('selected', checkbox.checked);
+            updateSelectAllButton();
+            updateGroupCheckbox(groupElement);
+          });
+
+          // Add click handler to title to switch to tab
+          title.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent the tab selection toggle
+            switchToTab(tab.id);
+          });
+
+          groupElement.appendChild(tabElement);
+        });
       });
 
       duplicateTabsContainer.appendChild(groupElement);

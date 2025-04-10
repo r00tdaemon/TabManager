@@ -103,7 +103,6 @@ button:disabled {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 300px;
 }
 
 .select-group-btn {
@@ -161,4 +160,23 @@ button:disabled {
 
 .hidden {
   display: none;
+}
+
+/* Chrome tab group styles */
+.chrome-group-header {
+  margin: 8px 0 4px 0;
+  padding: 4px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.chrome-group-title {
+  margin: 0;
+  font-size: 14px;
+  color: #5f6368;
+  font-weight: 500;
+}
+
+/* Indent tabs within Chrome groups */
+.chrome-group-header + .tab-item {
+  margin-left: 16px;
 }
