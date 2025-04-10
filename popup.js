@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const title = document.createElement('span');
         title.className = 'tab-title';
         title.textContent = tab.title;
-        title.title = tab.title; // Add tooltip with full text
+        title.title = tab.url; // Change tooltip to show full URL instead of title
 
         tabElement.appendChild(checkbox);
         tabElement.appendChild(favicon);
