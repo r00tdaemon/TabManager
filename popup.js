@@ -88,6 +88,31 @@ document.addEventListener('DOMContentLoaded', () => {
     selectAllBtn.textContent = isAllSelected ? 'Deselect All' : 'Select All';
   }
 
+  // Function to toggle group selection
+  function toggleGroupSelection(groupElement) {
+    const tabItems = groupElement.querySelectorAll('.tab-item');
+    const checkboxes = groupElement.querySelectorAll('.tab-item input[type="checkbox"]');
+    const groupCheckbox = groupElement.querySelector('.tab-group-header input[type="checkbox"]');
+
+    // Check if all tabs in the group are selected
+    const allSelected = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+    // Toggle selection
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = !allSelected;
+    });
+
+    tabItems.forEach(tabItem => {
+      tabItem.classList.toggle('selected', !allSelected);
+    });
+
+    // Update group checkbox
+    groupCheckbox.checked = !allSelected;
+
+    // Update global select all button state
+    updateSelectAllButton();
+  }
+
   // Function to display duplicate tabs
   function displayDuplicateTabs() {
     duplicateTabsContainer.innerHTML = '';
@@ -106,13 +131,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const groupElement = document.createElement('div');
       groupElement.className = 'tab-group';
 
+      const groupHeader = document.createElement('div');
+      groupHeader.className = 'tab-group-header';
+
+      const groupCheckbox = document.createElement('input');
+      groupCheckbox.type = 'checkbox';
+      groupCheckbox.checked = false;
+      groupCheckbox.addEventListener('change', () => toggleGroupSelection(groupElement));
+
       const groupTitle = document.createElement('h3');
       groupTitle.textContent = group.key;
-      groupElement.appendChild(groupTitle);
+      groupTitle.title = group.key; // Add tooltip with full text
+
+      groupHeader.appendChild(groupCheckbox);
+      groupHeader.appendChild(groupTitle);
+      groupElement.appendChild(groupHeader);
 
       group.tabs.forEach(tab => {
         const tabElement = document.createElement('div');
         tabElement.className = 'tab-item';
+        tabElement.dataset.tabId = tab.id;
 
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
@@ -125,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const title = document.createElement('span');
         title.className = 'tab-title';
         title.textContent = tab.title;
+        title.title = tab.title; // Add tooltip with full text
 
         tabElement.appendChild(checkbox);
         tabElement.appendChild(favicon);

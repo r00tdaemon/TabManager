@@ -82,10 +82,38 @@ button:disabled {
   border-radius: 4px;
 }
 
-.tab-group h3 {
-  margin: 0 0 8px 0;
+.tab-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 4px 0;
+}
+
+.tab-group-header input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.tab-group-header h3 {
+  margin: 0;
   font-size: 14px;
   color: #5f6368;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+}
+
+.select-group-btn {
+  padding: 4px 8px;
+  font-size: 12px;
+  background-color: #34a853;
+}
+
+.select-group-btn:hover {
+  background-color: #2d8a46;
 }
 
 .tab-item {
