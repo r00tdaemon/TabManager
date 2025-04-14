@@ -309,6 +309,27 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
     if (selectedTabs.length > 0) {
+      const confirmed = confirm(`Are you sure you want to close ${selectedTabs.length} selected tab(s)?`);
+      if (confirmed) {
+        await chrome.tabs.remove(selectedTabs);
+        findDuplicateTabs(); // Refresh the list
+      }
+    } else {
+      alert('Please select at least one tab to close.');
+    }
+  }
+
+  // Function to remove duplicate tabs
+  async function removeDuplicateTabs() {
+    // Get all selected tabs
+    const selectedTabs = Array.from(document.querySelectorAll('.tab-item input[type="checkbox"]:checked'))
+      .map(checkbox => {
+        const tabElement = checkbox.closest('.tab-item');
+        const tabId = parseInt(tabElement.dataset.tabId);
+        return tabId;
+      });
+
+    if (selectedTabs.length > 0) {
       // Group the selected tabs by their group
       const tabGroups = new Map();
 
@@ -340,6 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Event listeners
   findDuplicatesBtn.addEventListener('click', findDuplicateTabs);
-  closeDuplicatesBtn.addEventListener('click', closeSelectedTabs);
+  closeDuplicatesBtn.addEventListener('click', removeDuplicateTabs);
   selectAllBtn.addEventListener('click', toggleAllTabs);
+  document.getElementById('closeSelected').addEventListener('click', closeSelectedTabs);
 });

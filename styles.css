@@ -78,6 +78,22 @@ button:disabled {
   background-color: #2d8a46;
 }
 
+#closeDuplicates {
+  background-color: #34a853;
+}
+
+#closeDuplicates:hover {
+  background-color: #2d8a46;
+}
+
+.danger-button {
+  background-color: #dc3545;
+}
+
+.danger-button:hover {
+  background-color: #c82333;
+}
+
 .duplicate-tabs {
   max-height: 300px;
   overflow-y: auto;
